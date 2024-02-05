@@ -7,20 +7,25 @@ import {
 import { AppProvider, ErrorPage } from '@edx/frontend-platform/react';
 import ReactDOM from 'react-dom';
 
-import Header, { messages as headerMessages } from '@edx/frontend-component-header';
-import Footer, { messages as footerMessages } from '@edx/frontend-component-footer';
+import { messages as headerMessages } from '@edx/frontend-component-header';
+import { messages as footerMessages } from '@edx/frontend-component-footer';
 
 import appMessages from './i18n';
-import ExamplePage from './example/ExamplePage';
+
+import Layout from './Component/Layout/layout';
+import AppRouter from './Component/AppRouter/router';
+
+
 
 import './index.scss';
 
 subscribe(APP_READY, () => {
   ReactDOM.render(
     <AppProvider>
-      <Header />
-      <ExamplePage />
-      <Footer />
+      <Layout>
+        <AppRouter>
+        </AppRouter>
+      </Layout>
     </AppProvider>,
     document.getElementById('root'),
   );

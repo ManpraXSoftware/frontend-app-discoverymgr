@@ -51,7 +51,8 @@
     "react-router": "5.3.4",
     "react-router-dom": "5.3.4",
     "redux": "4.2.1",
-    "regenerator-runtime": "0.13.11"
+    "regenerator-runtime": "0.13.11",
+    "sharp": "^0.33.2"
   },
   "devDependencies": {
     "@edx/browserslist-config": "^1.1.1",
