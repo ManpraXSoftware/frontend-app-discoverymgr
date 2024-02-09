@@ -1,6 +1,7 @@
 import { Collapsible } from '@edx/paragon';
 import { FOUNDATION_PAGES, LANGUAGES } from '../Config/config';
 import classNames from 'classnames';
+import { Link } from 'react-router-dom/cjs/react-router-dom.min';
 const { pathname } = window.location
 
 
@@ -18,12 +19,12 @@ const SideBar = () => (
                         <ul className="list-unstyled foundations-list">
                             {FOUNDATION_PAGES.map(({ label, path }) => (
                                 <li key={path}>
-                                    <a
+                                    <Link
                                         className={classNames({ active: pathname.endsWith(path) })}
                                         to={path}
                                     >
                                         {label}
-                                    </a>
+                                    </Link>
                                 </li>
                             ))}
                         </ul>
@@ -36,12 +37,12 @@ const SideBar = () => (
                         <ul className="list-unstyled foundations-list">
                             {LANGUAGES.map(({ label, path }) => (
                                 <li key={path}>
-                                    <a
+                                    <Link
                                         className={classNames({ active: pathname.endsWith(path) })}
                                         to={path}
                                     >
                                         {label}
-                                    </a>
+                                    </Link>
                                 </li>
                             ))}
                         </ul>
