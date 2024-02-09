@@ -118,12 +118,12 @@ const INSIGHTS_PAGES = [
 
 const FOUNDATION_PAGES = [
   {
-    label: 'Colors',
-    path: '/discoverymgr',
+    label: 'Home',
+    path: '/',
   },
   {
-    label: 'Elevation',
-    path: '/foundations/elevation/',
+    label: 'Courses',
+    path: '/courses/',
   },
   {
     label: 'Typography',
