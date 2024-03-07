@@ -4,7 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { WysiwygEditor } from '../../Shared/InputFields/Wysiwyg';
 
 const BasicSettings = ({ settings, course_id, setLoading }) => {
-    const { title, short_description, full_description, outcome, video, tags } = settings;
+    const { title, short_description, full_description, outcome, tags } = settings;
+    const video = { src: settings.video ? settings.video.src : '' };
     const [basicSettings, setBasicSettings] = useState({
         title: title || "",
         short_description: short_description || "",
