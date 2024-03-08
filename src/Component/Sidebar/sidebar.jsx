@@ -1,11 +1,13 @@
 import { Collapsible } from '@edx/paragon';
-import { FOUNDATION_PAGES, LANGUAGES } from '../Config/config';
+import { FOUNDATION_PAGES, PROGRAM_PAGE } from '../Config/config';
 import classNames from 'classnames';
-import { Link } from 'react-router-dom/cjs/react-router-dom.min';
-const { pathname } = window.location
+import { Link, useLocation } from 'react-router-dom/cjs/react-router-dom.min';
 
 
-const SideBar = () => (
+
+const SideBar = () => {
+    const { pathname } = useLocation();
+    return (
     <div className="col-2">
         <div className="pgn__sticky pgn__sticky-top pgn__sticky-offset--6 pgn__sticky-shadow pgn-doc__toc p-0 pt-3">
             <div className="pgn-doc__menu">
@@ -13,7 +15,7 @@ const SideBar = () => (
 
                     <Collapsible
                         styling="basic"
-                        title="Foundations"
+                        title="Courses"
                         defaultOpen={pathname.startsWith('/discoverymgr')}
                     >
                         <ul className="list-unstyled foundations-list">
@@ -31,11 +33,11 @@ const SideBar = () => (
                     </Collapsible>
                     <Collapsible
                         styling="basic"
-                        title="Main"
-                        defaultOpen={pathname.startsWith('/foundations')}
+                        title="Programs"
+                        // defaultOpen={pathname.startsWith('/programs')}
                     >
                         <ul className="list-unstyled foundations-list">
-                            {LANGUAGES.map(({ label, path }) => (
+                            {PROGRAM_PAGE.map(({ label, path }) => (
                                 <li key={path}>
                                     <Link
                                         className={classNames({ active: pathname.endsWith(path) })}
@@ -51,6 +53,6 @@ const SideBar = () => (
             </div>
         </div>
     </div>
-);
+)};
 
 export default SideBar;
