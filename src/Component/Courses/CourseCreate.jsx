@@ -1,30 +1,25 @@
 import { fetchAuthenticatedUser, getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
-import { Button, Card, CardGrid, Col, Container, Form, Pagination, Row, breakpoints, useMediaQuery } from '@edx/paragon';
-import React, { useEffect, useState } from 'react';
+import { Button, Card, CardGrid, Col, Container, Form, Row, breakpoints, useMediaQuery } from '@edx/paragon';
+import React from 'react';
+import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 
 
 const CourseCreate = () => {
-    const [courses, setCourses] = useState([]);
-    const [totalPages, setTotalPages] = useState(1);
-    const [currentPage, setCurrentPage] = useState(1);
-    const isSmall = useMediaQuery({ maxWidth: breakpoints.small.maxWidth });
-    // const getCourses = async (pageNumber) => {
-    //     const authenticatedUser = await fetchAuthenticatedUser(); // validates and decodes JWT token
-    //     const response = await getAuthenticatedHttpClient().get(`${process.env.LMS_BASE_URL}/api/courses/v1/courses/?username=${authenticatedUser.username}&page=${pageNumber}`); // fetching from an authenticated API using user data
-    //     setCourses(response.data.results);
-    //     setTotalPages(response.data.pagination.num_pages);
-    //     setCurrentPage(pageNumber);
-    // }
-    const createCourse = (e) => {
+    const history = useHistory()
+    const createCourse = async (e) => {
         e.preventDefault();
-        const data = new FormData(e.target);
-        getAuthenticatedHttpClient().post(`http://studio.local.overhang.io:8001/course/`, data);
+        const data = {
+            "display_name": e.target.display_name.value,
+            "org":e.target.org.value,
+            "number":e.target.number.value,
+            'run':e.target.run.value
+        }
+        console.log("aaaaaaaa", e.target.display_name.value)
+        const response = await getAuthenticatedHttpClient().post('http://studio.local.overhang.io:8001/course/', data);
+        if (response.status==200){
+            history.push('/courses')
+        }
     }
-    // useEffect(
-    //     () => {
-    //         getCourses(1);
-    //     }, []
-    // )
     return <Container>
         <Row as={Container} className='justify-content-between mt-5'><h1>Create New Course</h1></Row>
         <Form onSubmit={createCourse}>

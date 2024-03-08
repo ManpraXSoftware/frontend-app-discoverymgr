@@ -21,7 +21,19 @@ const PROGRAM_PAGE = [
   },
 ]
 
+const DEGREE_PAGE = [
+  // {
+  //   label:"Create Degree",
+  //   path:'/createDegree'
+  // },
+  {
+    label:"Degrees",
+    path:'/degrees'
+  },
+]
+
 module.exports = {
   FOUNDATION_PAGES,
-  PROGRAM_PAGE
+  PROGRAM_PAGE,
+  DEGREE_PAGE
 };
