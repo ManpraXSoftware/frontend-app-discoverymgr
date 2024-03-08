@@ -1,4 +1,4 @@
-import { Button, Container, DataTable, Icon, IconButton, CheckboxFilter, Pagination, TextFilter, MultiSelectDropdownFilter, SearchField, DropdownButton, Dropdown, Form, Col, Modal, InputText } from '@edx/paragon';
+import { Button, Container, DataTable, Icon, IconButton, CheckboxFilter, Pagination, TextFilter, MultiSelectDropdownFilter, SearchField, DropdownButton, Dropdown, Form, Col, Modal, InputText, CardView, Card, ModalDialog, ActionRow } from '@edx/paragon';
 import { useState, useEffect } from 'react';
 import { Edit } from '@edx/paragon/icons';
 import { useHistory } from "react-router-dom";
@@ -9,7 +9,7 @@ const Programs = () => {
     const navigate = useHistory()
     const [data, setData] = useState([]);
     const [numPage, setNumPage] = useState(1)
-    const page_size = 5
+    const page_size = 8
     const [pageCount, setPageCount] = useState(1)
     const [itemCount, setItemCount] = useState(0)
     const [searh, setSearch] = useState('')
@@ -18,7 +18,8 @@ const Programs = () => {
     const [isPublished, setIsPublished] = useState(false)
     const [isDeleted, setIsDeleted] = useState(false)
     const [isRetired, setIsRetired] = useState(false)
-    const [status , setStatus] = useState([])
+    const [status, setStatus] = useState([])
+    const [loading, setLoading] = useState(true);
 
     async function getPrograms(page) {
         const response = await getAuthenticatedHttpClient().get(process.env.DISCOVERY_BASE_URL + `/api/v1/program_data/?page=${page}&page_size=${page_size}&q=${searh}&status=${status}`);
@@ -28,41 +29,57 @@ const Programs = () => {
             setItemCount(response.data.count)
             setNumPage(page);
             setPageCount(response.data.num_pages)
+            setLoading(false)
 
         }
     }
     useEffect(() => {
         getPrograms(1)
-        const status_data = []        
-        if(isActive){
+    }, [])
+
+    useEffect(() => {
+        const status_data = []
+        if (isActive) {
             status_data.push("active")
         }
-        
-        if (isPublished){
+
+        if (isPublished) {
             status_data.push("unpublished")
         }
-        
-        if(isDeleted){
+
+        if (isDeleted) {
             status_data.push("deleted")
         }
-        
-        if(isRetired){
+
+        if (isRetired) {
             status_data.push('retired')
         }
         setStatus(status_data)
-    }, [isActive,isDeleted, isRetired,isPublished])
+    }, [isActive, isDeleted, isRetired, isPublished])
 
-    const statusApply = ()=>{
+    const statusApply = () => {
+        setLoading(true)
         getPrograms(1)
         setFilterOpen(false)
     }
+
+    const CardData = ({ className, original }) => {
+        return (
+            <Card className="cardItem" onClick={() => { navigate.push(`/editProgram/${original.uuid}`, original) }}>
+                <Card.ImageCap src={original.banner_image != null ? original.banner_image : "https://picsum.photos/360/200/"} srcAlt="Card image" />
+                <Card.Header title={original.title} />
+
+            </Card>
+        );
+    };
+
 
     return (
         <Container className="col-10">
             <div className='row searh-bar justify-content-between'>
                 <SearchField
-                    onChange={(val)=>{setSearch(val)}}
-                    onSubmit={value => {getPrograms(1)}}
+                    onChange={(val) => { setSearch(val) }}
+                    onSubmit={value => { setLoading(true); getPrograms(1) }}
                 />
                 <Button className="filter-btn" onClick={() => setFilterOpen(true)}>
                     Filter
@@ -72,6 +89,7 @@ const Programs = () => {
                 </Button>
             </div>
             <DataTable
+                isLoading={loading}
                 additionalColumns={[
                     {
                         id: 'action',
@@ -101,15 +119,15 @@ const Programs = () => {
                     },
                 ]}
             >
-                <DataTable.TableControlBar />
-                <DataTable.Table />
+                <CardView CardComponent={CardData} />
+                {/* <DataTable.Table /> */}
                 <DataTable.EmptyTable content="No results found" />
 
                 <Pagination
                     paginationLabel="pagination navigation"
                     pageCount={pageCount}
                     currentPage={numPage}
-                    onPageSelect={(page) => { getPrograms(page) }}
+                    onPageSelect={(page) => { setLoading(true); getPrograms(page) }}
                 />
             </DataTable>
             <Modal
@@ -119,26 +137,26 @@ const Programs = () => {
                     <div>
                         <p>Status</p>
                         <Form.Group>
-                        <Form.Checkbox checked={isActive} onChange={()=>{setIsActive(!isActive)}}>
-                            Active
-                        </Form.Checkbox>
+                            <Form.Checkbox checked={isActive} onChange={() => { setIsActive(!isActive) }}>
+                                Active
+                            </Form.Checkbox>
                         </Form.Group>
                         <Form.Group>
-                        <Form.Checkbox checked={isPublished} onChange={()=>{setIsPublished(!isPublished)}}>
-                            Unpublished
-                        </Form.Checkbox>
+                            <Form.Checkbox checked={isPublished} onChange={() => { setIsPublished(!isPublished) }}>
+                                Unpublished
+                            </Form.Checkbox>
                         </Form.Group>
                         <Form.Group>
-                        <Form.Checkbox checked={isRetired} onChange={()=>{setIsRetired(!isRetired)}}>
-                            Retired
-                        </Form.Checkbox></Form.Group>
+                            <Form.Checkbox checked={isRetired} onChange={() => { setIsRetired(!isRetired) }}>
+                                Retired
+                            </Form.Checkbox></Form.Group>
                         <Form.Group>
-                        <Form.Checkbox checked={isDeleted} onChange={()=>{setIsDeleted(!isDeleted)}}>
-                            Deleted
-                        </Form.Checkbox></Form.Group>
+                            <Form.Checkbox checked={isDeleted} onChange={() => { setIsDeleted(!isDeleted) }}>
+                                Deleted
+                            </Form.Checkbox></Form.Group>
                     </div>
                 }
-                onClose={() => { setFilterOpen(false);setIsActive(false);setIsPublished(false);setIsRetired(false);setIsDeleted(false) }}
+                onClose={() => { setFilterOpen(false); setIsActive(false); setIsPublished(false); setIsRetired(false); setIsDeleted(false) }}
                 buttons={[
                     <Button data-autofocus onClick={statusApply}>Apply</Button>
                 ]}
