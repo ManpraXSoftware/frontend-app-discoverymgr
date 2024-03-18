@@ -19,19 +19,9 @@ const Loader = (props) => {
     }, [props.hidden]);
     const overlayStyle = {
         ...props.style,
-        position: "absolute",
-        top: 0,
-        right: 0,
-        bottom: 0,
-        left: 0,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: "rgba(255, 255, 255, 0.7)",
-        zIndex: 9999,
     };
     return (
-        <div {...props} className="mx-auto text-center" style={overlayStyle}>
+        <div {...props} className="mx-auto text-center overlay" style={overlayStyle}>
             <Spinner animation="border" className="mie-3" screenReaderText="loading" />
         </div>
     );

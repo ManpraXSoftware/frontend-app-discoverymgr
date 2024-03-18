@@ -1,9 +1,11 @@
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
-import { Button, Container, Form, Row } from '@edx/paragon';
+import { Button, Container, Form, MultiSelectDropdownFilter, Row } from '@edx/paragon';
 import React, { useEffect, useState } from 'react';
 import { WysiwygEditor } from '../../Shared/InputFields/Wysiwyg';
+import MultipleSelect from '../../Shared/InputFields/MultipleSelect';
+import { cleanObject } from '../../../utils';
 
-const BasicSettings = ({ settings, course_id, setLoading }) => {
+const BasicSettings = ({ settings, course_id, setLoading, showToast }) => {
     const { title, short_description, full_description, outcome, tags } = settings;
     const video = { src: settings.video ? settings.video.src : '' };
     const [basicSettings, setBasicSettings] = useState({
@@ -11,16 +13,17 @@ const BasicSettings = ({ settings, course_id, setLoading }) => {
         short_description: short_description || "",
         full_description: full_description || "",
         outcome: outcome || "",
-        video: video || { src: "" },
+        video: video || { src: null },
         tags: tags || [],
     });
+    const [tagsOptions, setTagOptions] = useState([{ name: "", value: "" }])
     useEffect(() => {
         setBasicSettings({
             title: title || "",
             short_description: short_description || "",
             full_description: full_description || "",
             outcome: outcome || "",
-            video: video || { src: "" },
+            video: video || { src: null },
             tags: tags || [],
         })
     }, [settings]);
@@ -35,13 +38,22 @@ const BasicSettings = ({ settings, course_id, setLoading }) => {
     const updateCourse = (e) => {
         e.preventDefault();
         setLoading(true)
-        getAuthenticatedHttpClient().patch(`${process.env.DISCOVERY_BASE_URL}/api/mx/course_runs/${course_id}/`, basicSettings)
-            .then((res) => setLoading(false))
+        getAuthenticatedHttpClient().patch(`${process.env.DISCOVERY_BASE_URL}/api/mx/course_runs/${course_id}/`, cleanObject(basicSettings))
+            .then((res) => showToast("Basic Settings Updated", res.status, res.statusText))
             .catch((error) => {
-                console.log(error);
+                showToast("Failed to update basic settings", error.customAttributes.httpErrorStatus, error.code);
                 setLoading(false);
             });
     }
+
+    useEffect(() => {
+        setLoading(true)
+        getAuthenticatedHttpClient().get(`${process.env.DISCOVERY_BASE_URL}/taggit_autosuggest/list/taggit.tag/`, cleanObject(basicSettings))
+            .then((res) => setTagOptions(res.data.map((v, i) => { return { label: v.name, value: v.value } })))
+            .catch((error) => {
+                setLoading(false);
+            });
+    }, [])
     return <Container>
 
         <Row as={Container} className='justify-content-between mt-5'><h1>Basic Settings</h1></Row>
@@ -75,7 +87,7 @@ const BasicSettings = ({ settings, course_id, setLoading }) => {
 
             <Form.Group >
                 <Form.Label >Tags</Form.Label>
-                <Form.Control name='tags' value={basicSettings.tags} onChange={handleChange} />
+                <MultipleSelect name="tags" dynamic handleChange={handleChange} options={tagsOptions} value={basicSettings.tags} />
             </Form.Group>
 
             <div className="d-flex">
