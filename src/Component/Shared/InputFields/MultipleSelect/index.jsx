@@ -2,7 +2,7 @@ import { Chip, CloseButton, Stack } from '@edx/paragon';
 import { useState } from 'react';
 import Select from 'react-select';
 import PropTypes from 'prop-types'
-
+import "./MultipleSelect.css"
 
 const MultipleSelect = ({ name, handleChange, value, options = [], dynamic = false, ...props }) => {
     const [showOption, setShowOption] = useState(false);
@@ -51,7 +51,7 @@ const MultipleSelect = ({ name, handleChange, value, options = [], dynamic = fal
             options={showOption ? options : []}
             onInputChange={handleInputChange}
         />
-        <Stack gap={2} direction="vertical" >
+        <Stack gap={2} direction="horizontal" className="horizontal-tag" >
             {selectedOptions.map((x, index) => <Chip onIconAfterClick={() => { unselect(x) }} iconAfter={CloseButton} >
                 {x.label}
             </Chip>

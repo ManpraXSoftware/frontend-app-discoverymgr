@@ -17,7 +17,7 @@ const Courses = () => {
     const getCourses = async (pageNumber) => {
         setLoading(true);
         const authenticatedUser = await fetchAuthenticatedUser(); // validates and decodes JWT token
-        const response = await getAuthenticatedHttpClient().get(`${STUDIO_BASE_URL}/api/v1/course_runs/?username=${authenticatedUser.username}&page=${pageNumber}&&page_size=12`); // fetching from an authenticated API using user data
+        const response = await getAuthenticatedHttpClient().get(`${STUDIO_BASE_URL}/api/v1/course_runs/?username=${authenticatedUser.username}&page=${pageNumber}&&page_size=8`); // fetching from an authenticated API using user data
         setLoading(false);
         setCourses(response.data.results);
         setTotalPages(response.data.num_pages);
@@ -38,13 +38,19 @@ const Courses = () => {
                     </ModalDialog.Title>
                 </ModalDialog.Header>
                 <ModalDialog.Body>
-                    <CourseCreate source={createModalData.source} compact={true} />
+                    <CourseCreate source={createModalData.source} compact={true} postCreate={() => { setCreateModalData({ source: "", isOpen: false }) }} />
                 </ModalDialog.Body>
             </>
         </ModalDialog>
         <Row as={Container} className='justify-content-between mt-5'><h1>Courses</h1><Button onClick={() => { }} as={Link} to="/courses/create" >Create</Button></Row>
         <Loader hidden={!loading} />
-        <CardGrid className="mb-5" hidden={loading}>
+        <CardGrid hasEqualColumnHeights columnSizes={{
+            xs: 3,
+            sm: 3,
+            md: 3,
+            lg: 3,
+            xl: 3,
+        }} className="mb-5" hidden={loading}>
             {
                 // courses.map((value, index) => <Card className="mt-5" orientation={isSmall ? "vertical" : "horizontal"}>
                 courses.map((value) => <Card className="m-3 justify-content-between" orientation={"vertical"}>

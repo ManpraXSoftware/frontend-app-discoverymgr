@@ -44,7 +44,7 @@ const CourseEdit = (props) => {
                     .then(
                         data => {
                             setCourseSettings(data);
-                setLoading(false);
+                            setLoading(false);
                         }
                     )
                     .catch(
@@ -56,7 +56,7 @@ const CourseEdit = (props) => {
     return <Container>
 
         <Toast
-            onClose={() => setToast({ message: "", show: false })}
+            onClose={() => setToast({ message: "", show: false, status: "", statusText: "" })}
             show={toast.show}
         >
             {toast.status} : {toast.statusText}

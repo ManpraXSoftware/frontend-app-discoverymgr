@@ -1,12 +1,12 @@
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
-import { Button, Chip, CloseButton, Col, Container, Form, Icon, IconButton, Stack } from '@edx/paragon';
+import { Button, Chip, CloseButton, Col, Container, Form, ModalDialog, Stack, TextArea } from '@edx/paragon';
 import { useState, useEffect } from 'react';
 import React from 'react';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
 
-const CreateProgram = () => {
+const CreateDegree = () => {
     const [types, setTypes] = useState([]);
     const [courses, setCourses] = useState([]);
     const [showOption, setShowOption] = useState(false);
@@ -48,29 +48,26 @@ const CreateProgram = () => {
         options.push({ "value": value.id, "label": value.key + ":" + value.title })
     })
 
-    const CreateProgram = async (e) => {
+    const createDegree = async (e) => {
         e.preventDefault()
         if (e.target.title.value == "") {
             setErrors({ "title": "This field is required." })
         }
-        else if (e.target.marketing_slug.value == "") {
-            setErrors({ "marketing_slug": "This field is required." })
-        }
-        else if (e.target.partner.value == "") {
-            setErrors({ "partner": "This field is required." })
+        else if (e.target.subtitle.value == "") {
+            setErrors({ "subtitle": "This field is required." })
         }
         else if (e.target.type.value == "") {
             setErrors({ "type": "This field is required." })
         }
-        else if (e.target.courses.value=="" || courseSelected == []) {
-            setErrors({ "courses": "This field is required." })
+        else if (e.target.marketing_slug.value == "") {
+            setErrors({ "marketing_slug": "This field is required." })
         }
         else {
             const form_data = new FormData(e.target)
-            getAuthenticatedHttpClient().post(process.env.DISCOVERY_BASE_URL + '/api/mx/program_data/', form_data).then(
+            getAuthenticatedHttpClient().post(process.env.DISCOVERY_BASE_URL + '/api/mx/degree/', form_data).then(
                 (res) => {
                     if (res.status == 201) {
-                        navigate.push('/programs')
+                        navigate.push('/degrees')
                     }
                 })
                 .catch((err) => {
@@ -93,39 +90,29 @@ const CreateProgram = () => {
     }
 
     return (
-        <Container className="col-10">
-            <h2>Create Program</h2>
-            <Form onSubmit={CreateProgram}>
+        <Container>
+            <Form onSubmit={createDegree}>
                 <Form.Row>
                     <Form.Group as={Col} controlId="title">
                         <Form.Label>Title</Form.Label>
-                        <Form.Control name='title' type="text" placeholder="Enter Program Title" />
+                        <Form.Control name='title' type="text" placeholder="Enter Degree Title" />
                         {errors.title ?
                             <Form.Control.Feedback type="invalid">
                                 {errors.title}
                             </Form.Control.Feedback> : ""}
                     </Form.Group>
-                    <Form.Group as={Col} controlId="marketing-slug">
-                        <Form.Label>Marketing Slug</Form.Label>
-                        <Form.Control name='marketing_slug' />
-                        {errors.marketing_slug ?
+                </Form.Row>
+                <Form.Row>
+                    <Form.Group as={Col} controlId="subtitle">
+                        <Form.Label>Subtitle</Form.Label>
+                        <Form.Control name='subtitle' type='text' placeholder='Enter Degree Subtitle' />
+                        {errors.subtitle ?
                             <Form.Control.Feedback type="invalid">
-                                {errors.marketing_slug}
+                                {errors.subtitle}
                             </Form.Control.Feedback> : ""}
                     </Form.Group>
                 </Form.Row>
                 <Form.Row>
-                    <Form.Group as={Col} controlId="partner">
-                        <Form.Label>Partner</Form.Label>
-                        <Form.Control name='partner' as="select">
-                            <option value="">--------</option>
-                            {partners.map((item) => { return (<option value={item.id}>{item.name}</option>) })}
-                        </Form.Control>
-                        {errors.partner ?
-                            <Form.Control.Feedback type="invalid">
-                                {errors.partner}
-                            </Form.Control.Feedback> : ""}
-                    </Form.Group>
                     <Form.Group as={Col} controlId="type">
                         <Form.Label>Type</Form.Label>
                         <Form.Control name='type' as="select">
@@ -139,40 +126,16 @@ const CreateProgram = () => {
                     </Form.Group>
                 </Form.Row>
                 <Form.Row>
-                    <Form.Group as={Col} controlId="courses">
-                        <Form.Label>Courses</Form.Label>
-                        <Select name='courses'
-                            controlShouldRenderValue={false}
-                            closeMenuOnSelect={false}
-                            components={animatedComponents}
-                            value={courseSelected}
-                            isMulti
-                            onChange={courseSelect}
-                            options={showOption ? options : []}
-                            onInputChange={(e) => { e.length > 2 ? setShowOption(true) : setShowOption(false) }}
-                        />
-                        <Stack
-                            gap={2}
-                            direction="vertical"
-                        >
-                            {courseSelected.map((course, index) => {
-                                return (
-                                    <Chip
-                                        onIconAfterClick={(e) => removeCourse(e, course)}
-                                        iconAfter={CloseButton}
-                                    >
-                                        {course.label}
-
-                                    </Chip>
-                                )
-                            })}
-                        </Stack>
-                        {errors.courses ?
+                    <Form.Group as={Col} controlId="marketing_slug">
+                        <Form.Label>Marketing Slug</Form.Label>
+                        <Form.Control name='marketing_slug' type='text' placeholder='Enter Marketing Slug' />
+                        {errors.marketing_slug ?
                             <Form.Control.Feedback type="invalid">
-                                {errors.courses}
+                                {errors.marketing_slug}
                             </Form.Control.Feedback> : ""}
                     </Form.Group>
                 </Form.Row>
+
                 <div className="d-flex">
                     <Button variant="primary" type="submit">
                         Submit
@@ -184,4 +147,4 @@ const CreateProgram = () => {
     )
 };
 
-export default CreateProgram;
+export default CreateDegree;

@@ -1,5 +1,5 @@
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
-import { Button, Container, Form, MultiSelectDropdownFilter, Row } from '@edx/paragon';
+import { Button, Container, Form, Row } from '@edx/paragon';
 import React, { useEffect, useState } from 'react';
 import { WysiwygEditor } from '../../Shared/InputFields/Wysiwyg';
 import MultipleSelect from '../../Shared/InputFields/MultipleSelect';

@@ -1,5 +1,5 @@
 import { Collapsible } from '@edx/paragon';
-import { FOUNDATION_PAGES, PROGRAM_PAGE } from '../Config/config';
+import { FOUNDATION_PAGES, PROGRAM_PAGE, DEGREE_PAGE } from '../Config/config';
 import classNames from 'classnames';
 import { Link, useLocation } from 'react-router-dom/cjs/react-router-dom.min';
 
@@ -31,13 +31,30 @@ const SideBar = () => {
                             ))}
                         </ul>
                     </Collapsible>
-                    <Collapsible
+                    {/* <Collapsible
                         styling="basic"
                         title="Programs"
                         // defaultOpen={pathname.startsWith('/programs')}
                     >
                         <ul className="list-unstyled foundations-list">
                             {PROGRAM_PAGE.map(({ label, path }) => (
+                                <li key={path}>
+                                    <Link
+                                        className={classNames({ active: pathname.endsWith(path) })}
+                                        to={path}
+                                    >
+                                        {label}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </Collapsible> */}
+                    <Collapsible
+                        styling="basic"
+                        title="Degrees"
+                    >
+                        <ul className="list-unstyled foundations-list">
+                            {DEGREE_PAGE.map(({ label, path }) => (
                                 <li key={path}>
                                     <Link
                                         className={classNames({ active: pathname.endsWith(path) })}
