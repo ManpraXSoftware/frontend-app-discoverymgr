@@ -37,7 +37,7 @@
     "@edx/frontend-component-footer": "11.7.1",
     "@edx/frontend-component-header": "^4.0.0",
     "@edx/frontend-platform": "^4.0.0",
-    "@edx/frontend-lib-content-components": "^1.131.0",
+    "@edx/frontend-lib-content-components": "git@github.com:ManpraXSoftware/frontend-lib-content-components.git#palm_discoverymgr",
     "@edx/paragon": "^21.0.0",
     "@fortawesome/fontawesome-svg-core": "1.2.36",
     "@fortawesome/free-brands-svg-icons": "5.15.4",
