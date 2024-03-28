@@ -382,5 +382,30 @@
 }
 
 .add-curriculum{
-  margin-bottom: 10px !important;
+  justify-content: flex-end;
+  margin-top: -20px !important;
+  margin-right: 5px;
+  margin-bottom: 5px;
+}
+.pgn__data-table-status{
+  display: none !important;
+}
+
+.button-link{
+  color: white !important;
+}
+.pgn__dropzone{
+  min-height: 45px !important;
+  padding:0px;
+}
+
+#fileText{
+  margin-top: 0;
+  margin-bottom: 0rem;
+}
+.css-1xc3v61-indicatorContainer{
+  display: none !important;
+}
+.css-1hb7zxy-IndicatorsContainer{
+ display: none !important;
 }

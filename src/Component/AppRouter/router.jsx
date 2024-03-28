@@ -1,7 +1,7 @@
 import { Route } from "react-router-dom/cjs/react-router-dom.min";
 import { Switch } from "react-router-dom/cjs/react-router-dom.min";
-import { useContext } from 'react';
-import { AppContext, Redirect } from '@edx/frontend-platform/react';
+import { useContext, useEffect } from 'react';
+import { AppContext } from '@edx/frontend-platform/react';
 import Dashboard from "../Dashboard/dashoard";
 import Homepage from "../Home/home";
 import { Courses, CourseCreate, CourseEdit } from "../Courses";
@@ -11,11 +11,17 @@ import EditProgram from "../Programs/editProgram";
 import Degrees from "../Degree/degrees";
 import CreateDegree from "../Degree/createDegree";
 import UpdateDegree from "../Degree/updateDegree";
-import { getLoginRedirectUrl } from "@edx/frontend-platform/auth";
+import { redirectToLogin } from "@edx/frontend-platform/auth";
 
 const AppRouter = () => {
     var _useContext = useContext(AppContext);
-    console.log("AAAAAAAAAAAAAAAAA",getLoginRedirectUrl())
+    useEffect(()=>{
+        if(_useContext.authenticatedUser == null){
+            localStorage.clear()
+            return redirectToLogin(process.env.DISCOVERYMGR_BASE_URL)
+        }
+    },
+    [])
     return (
         <Switch>
             {_useContext.authenticatedUser != null?<>

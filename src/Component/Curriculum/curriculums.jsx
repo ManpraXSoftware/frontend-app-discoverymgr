@@ -39,9 +39,12 @@ const Curriculums = (props) => {
     }
 
     return (<>
-        <Button variant="primary" className="add-curriculum" onClick={() => { setAddCurriculumModalOpen(true) }}>
+    <h4>Curriculums</h4>
+    <div className="d-flex add-curriculum">
+        <Button variant="primary" onClick={() => { setAddCurriculumModalOpen(true) }}>
             Add Curriculum
         </Button>
+        </div>
         {props.data.map((item, index) => (<Collapsible
             styling="card"
             title={item.name}

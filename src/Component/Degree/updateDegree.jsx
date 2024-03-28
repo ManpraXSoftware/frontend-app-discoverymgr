@@ -6,6 +6,8 @@ import Select from 'react-select';
 import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 import Curriculums from '../Curriculum/curriculums';
 import Quickfacts from '../QuickFacts/quickfacts';
+import WysiwygEditor from '../Shared/InputFields/Wysiwyg';
+import TagSelect from '../Shared/MultipleTagSelect/tagSelect';
 
 const UpdateDegree = () => {
     const location = useLocation()
@@ -29,6 +31,38 @@ const UpdateDegree = () => {
     const [quickfacts, setQuickfacts] = useState([])
     const hiddenCardImageInput = useRef(null)
     const hiddenBannerImageInput = useRef(null)
+    const [overview, setOverview] = useState('')
+    const [tagOptions, setTagOptions] = useState([])
+
+    async function getDegree(uuid) {
+        const response = await getAuthenticatedHttpClient().get(process.env.DISCOVERY_BASE_URL + `/api/v1/degree/${uuid}`);
+        if (response.status == 200) {
+            const response_data = response.data
+            setData(response_data)
+            // updateTagOptions(response.data)
+            getCurriculums(response.data.id)
+            getQuickfacts(response.data.id)
+            setOverview(response.data.overview ? response.data.overview : "")
+        }
+    }
+
+    useEffect(()=>{
+           getAuthenticatedHttpClient().get(process.env.DISCOVERY_BASE_URL + '/api/v1/courses').then((res)=>{
+                setCourseOptions(res.data.results.map((value, index)=>({"value":value.id,"label":value.key+":"+value.title})))
+            })
+            .catch(err=>{
+                console.log(err)
+            })
+            
+        getAuthenticatedHttpClient().get(process.env.DISCOVERY_BASE_URL + `/api/v1/tags/`).then((res)=>{
+            setTagOptions(res.data.map((val, index)=>({"value":val.id,"label":val.name})))
+        })
+        .catch(err=>{
+            console.log(err)
+        })
+    },[])
+
+
 
     async function getCurriculums(degree) {
         const response = await getAuthenticatedHttpClient().get(process.env.DISCOVERY_BASE_URL + `/api/v1/curriculums/?degree=${degree}`)
@@ -52,57 +86,10 @@ const UpdateDegree = () => {
                 setTypes(response_data)
             }
         }
-        async function getCourses() {
-            const response = await getAuthenticatedHttpClient().get(process.env.DISCOVERY_BASE_URL + '/api/v1/courses');
-            if (response.status == 200) {
-                const response_data = response.data.results
-                loadOptions(response.data.results)
-                setCourses(response_data)
-            }
-        }
-        async function getDegree(uuid) {
-            const response = await getAuthenticatedHttpClient().get(process.env.DISCOVERY_BASE_URL + `/api/v1/degree/${uuid}`);
-            if (response.status == 200) {
-                const response_data = response.data
-                setData(response_data)
-                updateDefaultCourses(response.data)
-                updateTagOptions(response.data)
-                getCurriculums(response.data.id)
-                getQuickfacts(response.data.id)
-            }
-        }
-        async function getTag() {
-            const response = await getAuthenticatedHttpClient().get(process.env.DISCOVERY_BASE_URL + `/api/v1/tags/`);
-            if (response.status == 200) {
-                const response_data = response.data
-                setTags(response_data)
-            }
-        }
-
+        
         getProgramTypes()
-        getCourses()
         getDegree(uuid)
-        getTag()
     }, [])
-
-
-    const loadOptions = (data) => {
-        const courseOptions = []
-        data.forEach((value, index) => {
-            courseOptions.push({ "value": value.id, "label": value.key + ":" + value.title })
-        })
-        setCourseOptions(courseOptions)
-    }
-    const updateDefaultCourses = (program) => {
-        const courseOptions = []
-        if (program.courses) {
-            program.courses.forEach((program_course, index) => {
-                courseOptions.push({ "value": program_course.id, "label": program_course.key + ":" + program_course.title })
-            })
-
-        }
-        setDefaultCourses(courseOptions)
-    }
 
     const updateTagOptions = (program) => {
         const tags = []
@@ -114,10 +101,10 @@ const UpdateDegree = () => {
         setDefaultTags(tags)
     }
 
-    const tagOptions = []
-    tags.forEach((value, index) => {
-        tagOptions.push({ "value": value.id, "label": value.name })
-    })
+    // const tagOptions = []
+    // tags.forEach((value, index) => {
+    //     tagOptions.push({ "value": value.id, "label": value.name })
+    // })
 
     const handleBannerChange = (e) => {
         setBannerImage(e.target.files[0])
@@ -143,11 +130,12 @@ const UpdateDegree = () => {
             if (cardImage != null) {
                 form_data.append('card_image', cardImage)
             }
+            form_data.append("overview", overview)
             getAuthenticatedHttpClient().patch(process.env.DISCOVERY_BASE_URL + `/api/v1/degree/${data.id}/`, form_data).then(
                 (res) => {
                     if (res.status == 200) {
                         setShow(true)
-                        setData(res.data)
+                        getDegree(uuid)
                         setActiveKey("step_2")
                     }
                 })
@@ -159,7 +147,7 @@ const UpdateDegree = () => {
 
     const updateDegree2 = (e) => {
         e.preventDefault()
-        if (e.target.courses.value == "" || defaultCourses == []) {
+        if (defaultCourses == []) {
             // setErrors({ "courses": "This field is required." })
             setActiveKey("step_3")
         }
@@ -169,7 +157,7 @@ const UpdateDegree = () => {
                 (res) => {
                     if (res.status == 200) {
                         setShow(true)
-                        setData(res.data)
+                        getDegree(uuid)
                         setActiveKey("step_3")
                     }
                 })
@@ -183,15 +171,6 @@ const UpdateDegree = () => {
         setDefaultCourses(data)
     }
 
-    const removeCourse = (e, data) => {
-        let new_data = [...defaultCourses]
-        let index = defaultCourses.indexOf(data)
-        if (index >= -1) {
-            new_data.splice(index, 1);
-        }
-        setDefaultCourses(new_data)
-    }
-
     const selectTag = (data) => {
         setDefaultTags(data)
     }
@@ -203,23 +182,6 @@ const UpdateDegree = () => {
             new_data.splice(index, 1);
         }
         setDefaultTags(new_data)
-    }
-
-
-    async function createTag(e) {
-        e.persist();
-        if (e.key == "Enter" && e.target.value != "") {
-            e.preventDefault()
-            const data = {
-                "name": e.target.value,
-                "slug": e.target.value.toLowerCase().replace(" ", "_")
-            }
-            const response = await getAuthenticatedHttpClient().post(process.env.DISCOVERY_BASE_URL + `/api/v1/tags/`, data);
-            if (response.status == 201) {
-                setDefaultTags(defaultTags => [...defaultTags, { "value": response.data.id, "label": response.data.name }])
-            }
-            e.target.value = ''
-        }
     }
 
     const removedCardImage = (id, fieldName) => {
@@ -245,10 +207,13 @@ const UpdateDegree = () => {
             })
     }
 
+    const handleChange = (val) => {
+        setOverview(val)
+    }
+    
     return (<Container className="col-10">
         <h2>Edit Degree</h2>
         <Tabs
-            variant="pills"
             activeKey={activeKey}
             id="uncontrolled-tab-example"
             onSelect={(k) => setActiveKey(k)}
@@ -281,7 +246,7 @@ const UpdateDegree = () => {
                             <Form.Label>Type*</Form.Label>
                             <Form.Control name='type' as="select">
                                 <option value="">--------</option>
-                                {types.map((item) => { return (<option value={item.id} selected={data.type != null ? item.id == data.type.id : false}>{item.name}</option>) })}
+                                {types.map((item) => { return (<option value={item.id} selected={data.type != null ? item.id == data.type : false}>{item.name}</option>) })}
                             </Form.Control>
                             {errors.type ?
                                 <Form.Control.Feedback type="invalid">
@@ -290,7 +255,7 @@ const UpdateDegree = () => {
                         </Form.Group>
                         <Form.Group as={Col} controlId="tags" className='col-6'>
                             <Form.Label>Tags</Form.Label>
-                            <Select name='labels'
+                            {/* <Select name='labels'
                                 controlShouldRenderValue={false}
                                 onChange={selectTag}
                                 components={animatedComponents}
@@ -298,7 +263,9 @@ const UpdateDegree = () => {
                                 isMulti
                                 options={tagOptions}
                                 onKeyDown={(e) => { createTag(e) }}
-                            />
+                            /> */}
+                            <TagSelect name="labels" data={data.labels}
+                                  options={tagOptions}/>
                             {errors.labels ?
                                 <Form.Control.Feedback type="invalid">
                                     {errors.labels}
@@ -343,19 +310,8 @@ const UpdateDegree = () => {
                         </Form.Group>
                     </Form.Row>
                     <Form.Row>
-
-
                     </Form.Row>
                     <Form.Row>
-                        <Form.Group as={Col} controlId="overview">
-                            <Form.Label>Overview</Form.Label>
-                            <Form.Control name='overview' as="textarea" defaultValue={data.overview} placeholder="Enter Degree Overview" />
-                            {errors.overview ?
-                                <Form.Control.Feedback type="invalid">
-                                    {errors.overview}
-                                </Form.Control.Feedback> : ""}
-                        </Form.Group>
-
                         <Form.Group as={Col} controlId="subtitle">
                             <Form.Label>Video</Form.Label>
                             <Form.Control name='video_url' defaultValue={data.video ? data.video.src : ""} type='url' placeholder='Enter video url'>
@@ -363,6 +319,16 @@ const UpdateDegree = () => {
                             {errors.video ?
                                 <Form.Control.Feedback type="invalid">
                                     {errors.video}
+                                </Form.Control.Feedback> : ""}
+                        </Form.Group>
+                        </Form.Row>
+                        <Form.Row>
+                        <Form.Group as={Col} controlId="overview">
+                            <Form.Label>Overview</Form.Label>
+                            <WysiwygEditor value={overview} name='overview' initialValue={overview} onChange={(val) => handleChange(val)} />
+                            {errors.overview ?
+                                <Form.Control.Feedback type="invalid">
+                                    {errors.overview}
                                 </Form.Control.Feedback> : ""}
                         </Form.Group>
                     </Form.Row>
@@ -381,7 +347,7 @@ const UpdateDegree = () => {
                     <Form.Row>
                         <Form.Group as={Col} controlId="courses">
                             <Form.Label>Courses*</Form.Label>
-                            <Select name='courses'
+                            {/* <Select name='courses'
                                 isMulti
                                 onChange={courseSelect}
                                 controlShouldRenderValue={false}
@@ -408,8 +374,13 @@ const UpdateDegree = () => {
                                         </Chip>
                                     )
                                 })}
-                            </Stack>
-
+                            </Stack> */}
+                                <TagSelect name="courses" data={data.courses}
+                                  options={courseOptions}/>
+                                {errors.courses ?
+                                <Form.Control.Feedback type="invalid">
+                                    {errors.courses}
+                                </Form.Control.Feedback> : ""}
                         </Form.Group>
 
                     </Form.Row>
@@ -424,11 +395,10 @@ const UpdateDegree = () => {
                 </Form>
             </Tab>
             <Tab eventKey="step_3" title="Curriculums & Qucik Facts">
-                <h4>Curriculums</h4>
-                <Curriculums degree={data.id} data={curriculums} get_data={getCurriculums}/>
-                <br></br>
+                <Curriculums degree={data.id} data={curriculums} get_data={getCurriculums} />
                 <h4>Quick Facts</h4>
-                <Quickfacts degree={data.id} data={quickfacts} get_data={getQuickfacts}/>
+                <Quickfacts degree={data.id} data={quickfacts} get_data={getQuickfacts} />
+                
             </Tab>
         </Tabs>
         <Toast

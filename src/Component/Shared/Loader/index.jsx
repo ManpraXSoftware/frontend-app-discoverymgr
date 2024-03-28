@@ -1,6 +1,6 @@
 import { Spinner } from "@edx/paragon";
 import React, { useEffect } from "react";
-import "./index.css";
+// import "./index.css";
 
 const Loader = (props) => {
     useEffect(() => {

@@ -10,6 +10,18 @@ const FOUNDATION_PAGES = [
   },
 ];
 
+const DEGREE_PAGE = [
+  // {
+  //   label:"Create Degree",
+  //   path:'/createDegree'
+  // },
+  
+  {
+    label:"Degrees",
+    path:'/degrees'
+  },
+]
+
 const PROGRAM_PAGE = [
   {
     label:"Create Program",
@@ -18,17 +30,6 @@ const PROGRAM_PAGE = [
   {
     label:"Programs",
     path:'/programs'
-  },
-]
-
-const DEGREE_PAGE = [
-  // {
-  //   label:"Create Degree",
-  //   path:'/createDegree'
-  // },
-  {
-    label:"Degrees",
-    path:'/degrees'
   },
 ]
 

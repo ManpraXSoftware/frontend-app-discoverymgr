@@ -1,5 +1,5 @@
 import { Collapsible } from '@edx/paragon';
-import { FOUNDATION_PAGES, PROGRAM_PAGE, DEGREE_PAGE } from '../Config/config';
+import { FOUNDATION_PAGES, DEGREE_PAGE } from '../Config/config';
 import classNames from 'classnames';
 import { Link, useLocation } from 'react-router-dom/cjs/react-router-dom.min';
 
